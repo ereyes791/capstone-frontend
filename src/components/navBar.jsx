@@ -14,6 +14,8 @@ import MoreIcon from '@mui/icons-material/MoreVert';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+const url = 'https://capstone-backend-cm7x.onrender.com';
+
 const Search = styled('section')(({ theme }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
@@ -54,7 +56,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function PrimarySearchAppBar({token,user,setUser,setProducts}) {
+export default function PrimarySearchAppBar({setToken,token,user,setUser,setProducts}) {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = React.useState('');
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -66,11 +68,29 @@ export default function PrimarySearchAppBar({token,user,setUser,setProducts}) {
     setSearchTerm(event.target.value);
   };
 
+  // create a function that fletch  to url + /api/user/allOrders and console log the data
+  const handleAllOrders = () => {
+    console.log('all orders clicked')
+    fetch(url+'/api/user/allOrders', {
+      method: "GET",
+      headers: {
+          'Content-Type': 'application',
+          'Authorization': 'Bearer '+token,
+      },})
+      .then(response => response.json())
+      .then(data => {
+        console.log(data); // Log the fetched products
+      })
+      .catch(error => {
+        console.error('Error fetching products:', error);
+      });
+  };
+
   const handleKeyPress = (event) => {
     if (event.key === 'Enter') {
       // Perform an action, like making an API request, using the search term
       console.log('Search term:', searchTerm);
-      fetch(`http://localhost:3000/api/product/${searchTerm}`)
+      fetch(`${url}/api/product/${searchTerm}`)
       .then(response => response.json())
       .then(data => {
         // Process API response
@@ -84,8 +104,20 @@ export default function PrimarySearchAppBar({token,user,setUser,setProducts}) {
 
     }
   };
+  const handleLogout = () => {
+    setToken(null);
+    setUser(null);
+    setIsLoggedIn(false);
+    handleMenuClose();
+  };
+  const handleOrders = () => {
+    navigate('/orders');
+  };
   useEffect(() => {
-    fetch('http://localhost:3000/api/user/profile', {
+    if (!token) {
+      return;
+    }
+    fetch(url+'/api/user/profile', {
       method: "GET",
       headers: {
           'Content-Type': 'application/json',
@@ -118,7 +150,9 @@ export default function PrimarySearchAppBar({token,user,setUser,setProducts}) {
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
-
+  const handleCart = () => {
+    navigate('/cart');
+  };
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
     <Menu
@@ -136,8 +170,9 @@ export default function PrimarySearchAppBar({token,user,setUser,setProducts}) {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My Orders</MenuItem>
+      <MenuItem onClick={handleLogout}>Logout</MenuItem>
+      <MenuItem onClick={handleCart}>My Cart</MenuItem>
+      <MenuItem onClick={handleOrders}>My Orders</MenuItem>
     </Menu>
   );
 
@@ -183,6 +218,7 @@ export default function PrimarySearchAppBar({token,user,setUser,setProducts}) {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
+        <IconButton color="inherit" onClick={()=>navigate('/')}>Capstone</IconButton>
           <Search >
             <SearchIconWrapper>
               <SearchIcon />

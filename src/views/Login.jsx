@@ -1,20 +1,38 @@
 // LoginView.js
 import React, { useState } from 'react';
-import { TextField, Button, Container, Typography } from '@mui/material';
+import { TextField, Button, Typography ,
+  Dialog, DialogActions , DialogContent ,
+   DialogContentText , DialogTitle } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import NavigationBar from '../components/Navigation';
-const LoginView = ({setToken}) => {
+const LoginView = ({url,setToken}) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
+  const [logfromserver, setLogfromserver] = useState('');
+  const handleClose = () => {
+    setOpen(false);
+  };
   const navigationButtons = [{path: "/register", name: "Register"}, {path: "/", name: "Home"}];
   const handleLogin = () => {
     // Handle login logic here
-
+    // check if the username and password are empty
+    if (username === '' || password === '') {
+      //check if username has a @ and a .
+      if (username.indexOf('@') === -1 || username.indexOf('.') === -1) {
+        setLogfromserver('Please enter a valid email');
+        setOpen(true);
+        return;
+      }
+      setLogfromserver('Please fill all fields');
+      setOpen(true);
+      return;
+    }
     console.log('Username:', username);
     console.log('Password:', password);
     //conect to the server
-    fetch('http://localhost:3000/api/auth/login', {
+    fetch(url+'/api/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -23,19 +41,27 @@ const LoginView = ({setToken}) => {
     })
       .then(response => response.json())
       .then(data => {
-        console.log(data);
-        // Save the token to local storage
         setToken(data.token);
-        navigate('/');
+        if(data.token){
+          navigate('/');
+        }
+        else{
+          setLogfromserver(data.message);
+          setOpen(true);
+        }
       })
       .catch(error => {
         console.error('Error:', error);
+        setLogfromserver('Error: '+error);
+        setOpen(true);
       });
   };
 
   return (
-    <Container>
-      <NavigationBar linksArrays={navigationButtons}/>
+    <div>   
+        <NavigationBar linksArrays={navigationButtons}/>
+        <section className="register-main">
+        <section className="body" >
       <div style={{ marginTop: '100px', textAlign: 'center' }}>
         <Typography variant="h4" gutterBottom>
           Login
@@ -69,7 +95,30 @@ const LoginView = ({setToken}) => {
           </Button>
         </form>
       </div>
-    </Container>
+      </section>
+      </section>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Register Message"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+              {logfromserver}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleClose} autoFocus>
+            Accept
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
   );
 };
 

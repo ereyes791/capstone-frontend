@@ -2,8 +2,11 @@ import React from 'react';
 import { AppBar, Toolbar, Typography, Button } from '@mui/material';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import  {useNavigate} from 'react-router-dom';
+
 
 function NavigationBar({ linksArrays }) {
+  const navigate = useNavigate(); 
   // Component code here
 NavigationBar.propTypes = {
   linksArrays: PropTypes.array.isRequired,

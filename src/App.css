@@ -1,3 +1,14 @@
 .carousel-root{
     width:300px;
 }
+.product-info{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    padding: 5vw;
+}
+.product-detail{
+display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}

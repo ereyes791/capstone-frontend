@@ -2,10 +2,10 @@ import PrimarySearchAppBar from "../components/navBar";
 import React, { useEffect, useState } from 'react';
 import ProductCard from "../components/product";
 
-function Home( {token,user,setUser}) {
+function Home( { setToken,url,token,user,setUser}) {
     const [products, setProducts] = useState([]);
     useEffect(() => {
-      fetch('http://localhost:3000/api/products')
+      fetch(url+'/api/products')
         .then(response => response.json())
         .then(data => {
           console.log(data); // Log the fetched products
@@ -17,7 +17,7 @@ function Home( {token,user,setUser}) {
     }, []);
   return (
     <section>
-        <PrimarySearchAppBar token = {token} user ={user} setUser={setUser} setProducts={setProducts}/>
+        <PrimarySearchAppBar setToken={setToken} token = {token} user ={user} setUser={setUser} setProducts={setProducts}/>
         <div>
       {products.map(product => (
         <ProductCard key={product.product_id} product={product} />
