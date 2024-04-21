@@ -48,12 +48,12 @@ const ProductDetail = ({url,token}) => {
     })
       .then(response => response.json())
       .then(data => {
+        navigate('/cart');
         console.log(data);
       })
       .catch(error => {
         console.error('Error:', error);
       });
-    navigate('/cart');
     console.log(`Added ${quantity} ${product.name} to cart`);
   };
 
